@@ -2,8 +2,8 @@ import logging
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as f
 
-def read_s3_binary_files(spark: SparkSession, 
-                         source_path: str) -> DataFrame:
+def _read_s3_binary_files(spark: SparkSession, 
+                          source_path: str) -> DataFrame:
     """
     Read binaty files from s3 bucket
     """
@@ -27,4 +27,11 @@ def read_s3_binary_files(spark: SparkSession,
         )
         raise e
     
+def _show_schema(df: DataFrame, 
+                 show_schema: bool): 
+    """
+    Show the DataFrame schema if the condition is true
+    """
     
+    if show_schema:
+        df.printSchema()
