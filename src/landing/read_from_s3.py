@@ -2,6 +2,8 @@ import logging
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as f
 
+from utils.constants import BYTES_PER_MB
+
 def _read_s3_binary_files(spark: SparkSession, 
                           source_path: str) -> DataFrame:
     """
@@ -35,3 +37,18 @@ def _show_schema(df: DataFrame,
     
     if show_schema:
         df.printSchema()
+
+def _get_metadata(df: DataFrame, 
+                  conversion_factor: int) -> DataFrame:
+    """
+    Select and transform columns for metadata
+    """
+    logging.info(
+        'Retrieving metadata from files...'
+    )
+    df_metadata = df.select(
+        f.col('path').alias('source_path'), 
+        f.col('modificationTime').alias('source_modified_at'), 
+        f.round(f.col('length') / conversion_factor, 2).alias('source_size_mb')
+    )
+    return df_metadata
