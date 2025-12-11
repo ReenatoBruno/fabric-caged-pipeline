@@ -58,3 +58,14 @@ def _build_path(df: DataFrame,
             'An error occurred while building the landing path'
         )
         raise e 
+    
+def _select_final_columns(df: DataFrame) -> DataFrame:
+    """ 
+    Select the final columns for the landing path
+    """
+
+    return df.select('source_path',
+                     'source_modified_at',
+                     'surce_size_mb',
+                     'bucket_path',
+                     'lakehouse_path')
