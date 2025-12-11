@@ -57,7 +57,7 @@ def extract_metadata(spark: SparkSession,
                      source_path: str) -> DataFrame:
     
     logging.info(
-        'Starting S3 metadata extraction...'
+        'Starting metadata extraction...'
     )
     
     df_binary_files = _read_binary_files(spark=spark, 
@@ -70,6 +70,6 @@ def extract_metadata(spark: SparkSession,
                                 conversion_factor=BYTES_PER_MB)
     
     logging.info(
-        's3 metadata extraction completed successfully'
+        'Metadata extraction completed successfully'
     )
     return df_metadata
