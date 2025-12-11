@@ -5,10 +5,10 @@ from pyspark.sql import functions as f
 
 from utils.constants import BYTES_PER_MB
 
-def _read_s3_binary_files(spark: SparkSession, 
-                          source_path: str) -> DataFrame:
+def _read_binary_files(spark: SparkSession, 
+                       source_path: str) -> DataFrame:
     """
-    Reading binary files from s3 bucket
+    Reading binary files from OneLake shurtcut
     """
     try: 
         logging.info(
@@ -16,14 +16,13 @@ def _read_s3_binary_files(spark: SparkSession,
         )
         df_binary_files = (
             spark.read.format('binaryFile')
-            .option('recursiveFileLookup', True)
+            .option('recursiveFileLookup', 'true')
             .load(source_path)
         )
         logging.info(
             'The files have benn successfully read from s3 bucket'
         )
         return df_binary_files
-    
     except Exception as e:
         logging.exception(
             f'An error occurred while reading files from s3 bucket'
@@ -33,7 +32,7 @@ def _read_s3_binary_files(spark: SparkSession,
 def _show_schema(df: DataFrame, 
                  show_schema: bool): 
     """
-    Show the DataFrame schema if the condition is true
+    Displays the PySpark DataFrame schema (metadata) if the control flag is set to True.
     """
     
     if show_schema:
@@ -42,7 +41,7 @@ def _show_schema(df: DataFrame,
 def _get_metadata(df: DataFrame, 
                   conversion_factor: int) -> DataFrame:
     """
-    Select and transform columns for metadata
+    Selects, renames, and transforms key file metadata columns.
     """
     logging.info(
         'Retrieving metadata from files...'
@@ -54,15 +53,15 @@ def _get_metadata(df: DataFrame,
     )
     return df_metadata
 
-def read_s3_metadata(spark: SparkSession,
+def extract_metadata(spark: SparkSession,
                      source_path: str) -> DataFrame:
     
     logging.info(
         'Starting S3 metadata extraction...'
     )
     
-    df_binary_files = _read_s3_binary_files(spark=spark, 
-                                            source_path=source_path)
+    df_binary_files = _read_binary_files(spark=spark, 
+                                         source_path=source_path)
     
     _show_schema(df=df_binary_files, 
                  show_schema=True)

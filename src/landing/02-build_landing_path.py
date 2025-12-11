@@ -5,7 +5,7 @@ from pyspark.sql import functions as f
 
 def _extract_relative_path(df: DataFrame) -> DataFrame:
     """   
-    Extract the relative backet path inside the Onelake
+    Extract the relative backet path within the Onelake
     
     Input'source_path': 
     abfss://b6d448cc-4a6a-4928-b3d7-b9e1e3be481a@onelake.dfs.fabric.microsoft.com/
