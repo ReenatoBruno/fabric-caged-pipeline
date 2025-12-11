@@ -2,7 +2,7 @@ import logging
 from pyspark.sql import SparkSession
 
 from config.paths import SHORTCUT_PATH
-from src.landing.read_from_s3 import read_s3_metadata
+from landing.read_s3_metadata import read_s3_metadata
 
 def main(): 
     
