@@ -33,4 +33,28 @@ def _extract_relative_path(df: DataFrame) -> DataFrame:
         )
         raise e 
 
-
+def _build_path(df: DataFrame, 
+                target_path: str) -> DataFrame:
+    """
+    Creates the full destination path for the Lakehouse/landing zone 
+    by prepending the target_path to the relative bucket path
+      
+    Target Path: LANDING_ROOT_PATH = 'Files/Landing/CAGED'
+    """
+    logging.info(
+        'Building path within the landing zone'
+    )
+    try:
+        df_path = df.withColumn(
+            'lakehouse_path', 
+            f.concat(f.lit(target_path + '/'), f.col('bucket_path'))
+        )
+        logging.info(
+            'landing zone path successfully created'
+        )
+        return df_path
+    except Exception as e:
+        logging.exception(
+            'An error occurred while building the landing path'
+        )
+        raise e 
