@@ -73,5 +73,4 @@ def read_s3_metadata(spark: SparkSession,
     logging.info(
         's3 metadata extraction completed successfully'
     )
-   
     return df_metadata
