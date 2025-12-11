@@ -71,7 +71,6 @@ def _select_final_columns(df: DataFrame) -> DataFrame:
                                  'lakehouse_path')
     return df_landing_path
 
-
 def build_landing_path(df: DataFrame, 
                        target_path: str) -> DataFrame: 
       
