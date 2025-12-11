@@ -63,9 +63,23 @@ def _select_final_columns(df: DataFrame) -> DataFrame:
     """ 
     Select the final columns for the landing path
     """
+    
+    df_landing_path =  df.select('source_path',
+                                 'source_modified_at',
+                                 'surce_size_mb',
+                                 'bucket_path',
+                                 'lakehouse_path')
+    return df_landing_path
 
-    return df.select('source_path',
-                     'source_modified_at',
-                     'surce_size_mb',
-                     'bucket_path',
-                     'lakehouse_path')
+
+def build_landing_path(df: DataFrame, 
+                       target_path: str) -> DataFrame: 
+      
+      df_extracted = _extract_relative_path(df=df)
+      
+      df_path = _build_path(df=df_extracted, 
+                            target_path=target_path)
+      
+      df_landing_path =_select_final_columns(df=df_path)
+
+      return df_landing_path
