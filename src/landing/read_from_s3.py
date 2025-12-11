@@ -1,4 +1,5 @@
 import logging
+
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as f
 
@@ -7,15 +8,15 @@ from utils.constants import BYTES_PER_MB
 def _read_s3_binary_files(spark: SparkSession, 
                           source_path: str) -> DataFrame:
     """
-    Read binaty files from s3 bucket
+    Reading binary files from s3 bucket
     """
     try: 
         logging.info(
             f'Reading files from {source_path}'
         )
         df_binary_files = (
-            spark.read.format('binaryFiles')
-            .option('recursiveFileLoockup', True)
+            spark.read.format('binaryFile')
+            .option('recursiveFileLookup', True)
             .load(source_path)
         )
         logging.info(
@@ -51,4 +52,26 @@ def _get_metadata(df: DataFrame,
         f.col('modificationTime').alias('source_modified_at'), 
         f.round(f.col('length') / conversion_factor, 2).alias('source_size_mb')
     )
+    return df_metadata
+
+def read_s3_metadata(spark: SparkSession,
+                     source_path: str) -> DataFrame:
+    
+    logging.info(
+        'Starting S3 metadata extraction...'
+    )
+    
+    df_binary_files = _read_s3_binary_files(spark=spark, 
+                                            source_path=source_path)
+    
+    _show_schema(df=df_binary_files, 
+                 show_schema=True)
+
+    df_metadata = _get_metadata(df=df_binary_files, 
+                                conversion_factor=BYTES_PER_MB)
+    
+    logging.info(
+        's3 metadata extraction completed successfully'
+    )
+   
     return df_metadata
