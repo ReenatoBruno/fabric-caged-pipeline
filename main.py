@@ -2,7 +2,8 @@ import logging
 from pyspark.sql import SparkSession
 
 from config.paths import SHORTCUT_PATH
-from landing.read_s3_metadata import read_s3_metadata
+from src.landing.extract_metadata import extract_metadata
+from src.landing.build_landing_path import build_landing_path
 
 def main(): 
     
@@ -15,7 +16,10 @@ def main():
         'Starting CAGED pipeline execution...'
     )
 
-    df_metadata = read_s3_metadata(spark=spark,
+    df_metadata = extract_metadata(spark=spark,
                                    source_path=SHORTCUT_PATH) 
     
-    return (df_metadata)
+    df_landing_path = build_landing_path(df=df_metadata)
+
+    return (df_metadata,
+            df_landing_path)
