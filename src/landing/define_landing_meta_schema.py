@@ -1,7 +1,7 @@
 from pyspark.sql import functions as f
 from pyspark.sql.types import *
 
-def define_landing_meta_schema():
+def define_landing_meta_schema() -> StructType:
     """  
     Define the schama for the landing meta table
     """
