@@ -9,7 +9,7 @@ from pyspark.sql.types import (StructType,
 
 def _define_meta_schema() -> StructType:
     """  
-    Define the schama for the landing meta table
+    Define the schema for the landing meta table
     """
 
     meta_schema = StructType([
@@ -17,7 +17,8 @@ def _define_meta_schema() -> StructType:
         StructField('source_modified_at', TimestampType(), False), 
         StructField('source_size_mb', FloatType(), False), 
         StructField('bucket_path', StringType(), False), 
-        StructField('lakehouse_path', StringType(), False)
+        StructField('lakehouse_path', StringType(), False),
+        StructField('copied_at', TimestampType(), False)
     ])
 
     return meta_schema
