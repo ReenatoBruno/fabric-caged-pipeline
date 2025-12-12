@@ -73,12 +73,20 @@ def _select_final_columns(df: DataFrame) -> DataFrame:
 
 def build_landing_path(df: DataFrame, 
                        target_path: str) -> DataFrame: 
+    """ 
+    Orchestrates the full landing-path build process and returns the final
+    metadata DataFrame containing the columns:
+    - source_modified_at
+    - source_size_mb
+    - bucket_path
+    - lakehouse_path
+    """
+    
+    df_extracted = _extract_relative_path(df=df)
       
-      df_extracted = _extract_relative_path(df=df)
-      
-      df_path = _build_path(df=df_extracted, 
+    df_path = _build_path(df=df_extracted, 
                             target_path=target_path)
       
-      df_landing_path =_select_final_columns(df=df_path)
+    df_landing_path =_select_final_columns(df=df_path)
 
-      return df_landing_path
+    return df_landing_path
