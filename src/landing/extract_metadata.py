@@ -8,7 +8,7 @@ from utils.constants import BYTES_PER_MB
 def _read_binary_files(spark: SparkSession, 
                        source_path: str) -> DataFrame:
     """
-    Reading binary files from OneLake shurtcut
+    Reading binary files from OneLake shortcut
     """
     try: 
         logging.info(
@@ -20,12 +20,12 @@ def _read_binary_files(spark: SparkSession,
             .load(source_path)
         )
         logging.info(
-            'The files have benn successfully read from s3 bucket'
+            'Files successfully read from OneLake shortcut'
         )
         return df_binary_files
     except Exception as e:
         logging.exception(
-            f'An error occurred while reading files from s3 bucket'
+            f'An error occurred while reading files from: {source_path}'
         )
         raise e
     
