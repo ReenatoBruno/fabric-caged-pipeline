@@ -5,7 +5,7 @@ from pyspark.sql import functions as f
 
 def _extract_relative_path(df: DataFrame) -> DataFrame:
     """   
-    Extract the relative backet path within the Onelake
+    Extract the relative bucket path within the OneLake
     
     Input'source_path': 
     abfss://b6d448cc-4a6a-4928-b3d7-b9e1e3be481a@onelake.dfs.fabric.microsoft.com/
@@ -24,7 +24,7 @@ def _extract_relative_path(df: DataFrame) -> DataFrame:
             f.expr("split(source_path, '/Files/', 2)[1]")
         )
         logging.info (
-            'Extraction successfully completed'
+            'Relative bucket path extracted successfully'
         )
         return df_extracted
     except Exception as e: 
@@ -50,7 +50,7 @@ def _build_path(df: DataFrame,
             f.concat(f.lit(target_path + '/'), f.col('bucket_path'))
         )
         logging.info(
-            'landing zone path successfully created'
+            'Landing zone path successfully created'
         )
         return df_path
     except Exception as e:
@@ -76,6 +76,7 @@ def build_landing_path(df: DataFrame,
     """ 
     Orchestrates the full landing-path build process and returns the final
     metadata DataFrame containing the columns:
+    - source_path
     - source_modified_at
     - source_size_mb
     - bucket_path
