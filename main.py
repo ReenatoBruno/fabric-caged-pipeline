@@ -1,4 +1,5 @@
 import logging
+from IPython.display import display
 from pyspark.sql import SparkSession
 
 from config.paths import (SHORTCUT_PATH, 
@@ -22,12 +23,15 @@ def main():
 
     df_metadata = extract_metadata(spark=spark,
                                    source_path=SHORTCUT_PATH) 
+    display(df_metadata.limit(10))
     
     df_landing_path = build_landing_path(df=df_metadata,
                                          target_path=LANDING_ROOT_PATH)
+    display(df_landing_path.limit(10))
 
     df_meta_table = setup_landing_metadata(spark=spark, 
                                            table_name=LANDING_META_TABLE_NAME)
+    display(df_meta_table .limit(10))
 
     return (df_metadata,
             df_landing_path,
