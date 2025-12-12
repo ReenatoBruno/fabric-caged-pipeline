@@ -12,7 +12,7 @@ def _extract_relative_path(df: DataFrame) -> DataFrame:
     5b014b43-0a49-44a5-bc15-f25f51814631/Files/
     amzn-caged-bucket-renato/caged/2020/CAGEDMOV202001.txt
 
-    Output 'bucket_relative_path':
+    Output 'bucket_path':
     amzn-caged-bucket-renato/caged/2020/CAGEDMOV202001.txt
     """
     logging.info(
@@ -81,7 +81,7 @@ def build_landing_path(df: DataFrame,
     - bucket_path
     - lakehouse_path
     """
-    
+
     df_extracted = _extract_relative_path(df=df)
       
     df_path = _build_path(df=df_extracted, 
