@@ -66,7 +66,7 @@ def _select_final_columns(df: DataFrame) -> DataFrame:
     
     df_landing_path =  df.select('source_path',
                                  'source_modified_at',
-                                 'surce_size_mb',
+                                 'source_size_mb',
                                  'bucket_path',
                                  'lakehouse_path')
     return df_landing_path
