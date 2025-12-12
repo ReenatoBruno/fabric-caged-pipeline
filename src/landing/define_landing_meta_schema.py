@@ -60,7 +60,7 @@ def _get_meta_table(spark: SparkSession,
     try: 
         df_meta_table = spark.table(table_name)
         logging.info (
-            'Successfully loaded landing metadata table {table_name}'
+            f'Successfully loaded landing metadata table {table_name}'
         )
         return df_meta_table
     except Exception as e: 
@@ -69,3 +69,26 @@ def _get_meta_table(spark: SparkSession,
             exc_info=True
         )
         raise e
+    
+def setup_landing_metadata(spark: SparkSession, 
+                           table_name: str) -> DataFrame: 
+    """  
+    This function ensures that the landing metadata table exists by creating it
+    if necessary, using the provided schema
+    """
+    logging.info(
+        'Starting setup for landing metadata table...'
+    )
+    meta_schema = _define_meta_schema()
+
+    _create_meta_table(spark=spark, 
+                       schema=meta_schema, 
+                       table_name=table_name)
+
+    df_meta_table = _get_meta_table(spark=spark, 
+                                    table_name=table_name)
+    
+    logging.info(
+        'Landing metadata setup completed successfully'
+    )
+    return df_meta_table
