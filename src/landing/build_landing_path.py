@@ -33,45 +33,45 @@ def _extract_relative_path(df: DataFrame) -> DataFrame:
         )
         raise e 
 
-def _build_path(df: DataFrame, 
+def _build_meta_path(df: DataFrame, 
                 target_path: str) -> DataFrame:
     """
-    Creates the full destination path for the Lakehouse/landing zone 
-    by prepending the target_path to the relative bucket path
+    Generates the logical lakehouse path by concatenating the target_path
+    with the relative bucket_path.
       
     Target Path: LANDING_ROOT_PATH = 'Files/Landing/CAGED'
     """
     logging.info(
-        'Building path within the landing zone'
+        'Generating logical lakehouse path based on target_path and bucket_path'
     )
     try:
-        df_path = df.withColumn(
+        df_paths = df.withColumn(
             'lakehouse_path', 
             f.concat(f.lit(target_path + '/'), f.col('bucket_path'))
         )
         logging.info(
-            'Landing zone path successfully created'
+            'Logical lakehouse path column successfully generated'
         )
-        return df_path
+        return df_paths
     except Exception as e:
         logging.exception(
-            'An error occurred while building the landing path'
+            'An error occurred while generating the logical lakehouse path'
         )
         raise e 
     
-def _select_final_columns(df: DataFrame) -> DataFrame:
+def _select_meta_columns(df: DataFrame) -> DataFrame:
     """ 
-    Select the final columns for the landing path
+    Select the final columns for the metadata
     """
     
-    df_landing_path =  df.select('source_path',
+    df_meta_columns =  df.select('source_path',
                                  'source_modified_at',
                                  'source_size_mb',
                                  'bucket_path',
                                  'lakehouse_path')
-    return df_landing_path
+    return df_meta_columns
 
-def build_landing_path(df: DataFrame, 
+def build_file_meta(df: DataFrame, 
                        target_path: str) -> DataFrame: 
     """ 
     Orchestrates the full landing-path build process and returns the final
@@ -85,9 +85,9 @@ def build_landing_path(df: DataFrame,
 
     df_extracted = _extract_relative_path(df=df)
       
-    df_path = _build_path(df=df_extracted, 
-                            target_path=target_path)
+    df_paths = _build_meta_path(df=df_extracted, 
+                               target_path=target_path)
       
-    df_landing_path =_select_final_columns(df=df_path)
+    df_meta_columns = _select_meta_columns(df=df_paths)
 
-    return df_landing_path
+    return df_meta_columns
