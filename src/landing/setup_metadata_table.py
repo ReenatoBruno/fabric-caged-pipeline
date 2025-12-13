@@ -71,7 +71,7 @@ def _get_meta_table(spark: SparkSession,
         )
         raise e
     
-def setup_landing_metadata(spark: SparkSession, 
+def setup__metadata_table(spark: SparkSession, 
                            table_name: str) -> DataFrame: 
     """  
     This function ensures that the landing metadata table exists by creating it
@@ -90,6 +90,6 @@ def setup_landing_metadata(spark: SparkSession,
                                     table_name=table_name)
     
     logging.info(
-        'Landing metadata setup completed successfully'
+        'Landing metadata table setup successful'
     )
     return df_meta_table
