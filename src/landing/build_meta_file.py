@@ -3,9 +3,9 @@ import logging
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as f
 
-def _extract_relative_path(df: DataFrame) -> DataFrame:
+def _build_relative_bucket_path(df: DataFrame) -> DataFrame:
     """   
-    Extract the relative bucket path within the OneLake
+    Build the relative bucket path within the OneLake
     
     Input'source_path': 
     abfss://b6d448cc-4a6a-4928-b3d7-b9e1e3be481a@onelake.dfs.fabric.microsoft.com/
@@ -16,46 +16,46 @@ def _extract_relative_path(df: DataFrame) -> DataFrame:
     amzn-caged-bucket-renato/caged/2020/CAGEDMOV202001.txt
     """
     logging.info(
-        'Extracting relative bucket path'
+        'Building relative bucket path...'
     )
     try: 
-        df_extracted  = df.withColumn(
+        df_with_bucket_path  = df.withColumn(
             'bucket_path', 
             f.expr("split(source_path, '/Files/', 2)[1]")
         )
         logging.info (
-            'Relative bucket path extracted successfully'
+            'Relative bucket path built successfully'
         )
-        return df_extracted
+        return df_with_bucket_path
     except Exception as e: 
         logging.exception(
-            'An error occurred while extracting the bucket path'
+            'An error occurred while building the bucket path'
         )
         raise e 
 
-def _build_meta_path(df: DataFrame, 
-                     target_path: str) -> DataFrame:
+def _build_relative_lakehouse_path(df: DataFrame, 
+                                   root_path: str) -> DataFrame:
     """
-    Generates the logical lakehouse path by concatenating the target_path
+    Generates the logical lakehouse path by concatenating the root_path
     with the relative bucket_path.
       
-    Target Path: LANDING_ROOT_PATH = 'Files/Landing/CAGED'
+    LANDING_ROOT_PATH = 'Files/Landing/CAGED'
     """
     logging.info(
-        'Generating logical lakehouse path...'
+        'Building logical lakehouse path...'
     )
     try:
-        df_paths = df.withColumn(
+        df_with_lakehouse_path = df.withColumn(
             'lakehouse_path', 
-            f.concat(f.lit(target_path + '/'), f.col('bucket_path'))
+            f.concat(f.lit(root_path + '/'), f.col('bucket_path'))
         )
         logging.info(
-            'Logical lakehouse path column successfully generated'
+            'Logical lakehouse path built successfully'
         )
-        return df_paths
+        return df_with_lakehouse_path
     except Exception as e:
         logging.exception(
-            'An error occurred while generating the logical lakehouse path'
+            'An error occurred while building the logical lakehouse path'
         )
         raise e 
     
@@ -83,11 +83,11 @@ def build_meta_file(df: DataFrame,
     - lakehouse_path
     """
 
-    df_extracted = _extract_relative_path(df=df)
+    df_with_bucket_path = _build_relative_bucket_path(df=df)
       
-    df_paths = _build_meta_path(df=df_extracted, 
-                               target_path=target_path)
+    df_with_lakehouse_path = _build_relative_lakehouse_path(df=df_with_bucket_path, 
+                                                            target_path=target_path)
       
-    df_meta_columns = _select_meta_columns(df=df_paths)
+    df_meta_columns = _select_meta_columns(df=df_with_lakehouse_path)
 
     return df_meta_columns
