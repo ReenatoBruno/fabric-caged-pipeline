@@ -30,7 +30,7 @@ def _read_binary_files(spark: SparkSession,
         raise e
     
 def _show_schema(df: DataFrame, 
-                 show_schema: bool): 
+                 show_schema: bool) -> None:
     """
     Displays the PySpark DataFrame schema (metadata) if the control flag is set to True.
     """
