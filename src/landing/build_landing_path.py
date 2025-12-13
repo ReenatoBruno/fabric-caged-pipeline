@@ -34,7 +34,7 @@ def _extract_relative_path(df: DataFrame) -> DataFrame:
         raise e 
 
 def _build_meta_path(df: DataFrame, 
-                target_path: str) -> DataFrame:
+                     target_path: str) -> DataFrame:
     """
     Generates the logical lakehouse path by concatenating the target_path
     with the relative bucket_path.
@@ -42,7 +42,7 @@ def _build_meta_path(df: DataFrame,
     Target Path: LANDING_ROOT_PATH = 'Files/Landing/CAGED'
     """
     logging.info(
-        'Generating logical lakehouse path based on target_path and bucket_path'
+        'Generating logical lakehouse path...'
     )
     try:
         df_paths = df.withColumn(
