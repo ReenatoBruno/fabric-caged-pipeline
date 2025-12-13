@@ -71,8 +71,8 @@ def _select_meta_columns(df: DataFrame) -> DataFrame:
                                  'lakehouse_path')
     return df_meta_columns
 
-def build_file_meta(df: DataFrame, 
-                       target_path: str) -> DataFrame: 
+def build_meta_file(df: DataFrame, 
+                    target_path: str) -> DataFrame: 
     """ 
     Orchestrates the full landing-path build process and returns the final
     metadata DataFrame containing the columns:
