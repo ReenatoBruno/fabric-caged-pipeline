@@ -50,8 +50,8 @@ def _create_meta_table (spark: SparkSession,
         )
         raise e 
     
-def _get_meta_table(spark: SparkSession, 
-                    table_name: str) -> DataFrame:
+def _load_meta_table(spark: SparkSession, 
+                     table_name: str) -> DataFrame:
     """  
     Loads the landing metadata table as a Spark DataFrame
     """
@@ -86,8 +86,8 @@ def setup_meta_table(spark: SparkSession,
                        schema=meta_schema, 
                        table_name=table_name)
 
-    df_meta_table = _get_meta_table(spark=spark, 
-                                    table_name=table_name)
+    df_meta_table = _load_meta_table(spark=spark, 
+                                     table_name=table_name)
     
     logging.info(
         'Landing metadata table setup successful'
