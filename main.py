@@ -9,6 +9,7 @@ from config.paths import (SHORTCUT_PATH,
 from src.landing.extract_metadata import extract_metadata
 from landing.build_metadata import build_metadata
 from landing.setup_metadata_table import setup_meta_table
+from landing.orchestrate_incremental_copy import orchestrate_incremental_copy
 
 def main(): 
     
@@ -31,8 +32,13 @@ def main():
 
     df_meta_table = setup_meta_table(spark=spark, 
                                      table_name=LANDING_META_TABLE_NAME)
-    (df_meta_table .limit(10))
+    display(df_meta_table.limit(10))
+
+    df_ready_for_copy = orchestrate_incremental_copy(df_metadata=df_metadata, 
+                                                     df_meta_table=df_meta_table)
+    display(df_ready_for_copy.limit(10))
 
     return (df_meta_extracted,
             df_metadata,
-            df_meta_table)
+            df_meta_table,
+            df_ready_for_copy)
