@@ -46,12 +46,12 @@ def _get_metadata(df: DataFrame,
     logging.info(
         'Retrieving metadata from files...'
     )
-    df_metadata = df.select(
+    df_meta_extracted = df.select(
         f.col('path').alias('source_path'), 
         f.col('modificationTime').alias('source_modified_at'), 
         f.round(f.col('length') / conversion_factor, 2).alias('source_size_mb')
     )
-    return df_metadata
+    return df_meta_extracted
 
 def extract_metadata(spark: SparkSession,
                      source_path: str) -> DataFrame:
