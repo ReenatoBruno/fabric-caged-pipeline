@@ -1,6 +1,7 @@
 import logging
 
-from pyspark.sql import DataFrame, SparkSession
+from IPython.display import display
+from pyspark.sql import DataFrame
 from pyspark.sql import functions as f
 
 def _get_latest_copied_files(df: DataFrame) -> DataFrame: 
@@ -22,11 +23,12 @@ def _get_latest_copied_files(df: DataFrame) -> DataFrame:
         return df_latest_files
     except Exception as e:
         logging.error(
-            'Error while computing latest copied files.'
+            'Error while computing latest copied files.', 
+            exc_info=True
         )
-        raise e 
+    raise
 
-def _get_new_or_updated_files(df_meta_table: DataFrame,
+def _get_new_or_updated_files(df_metadata: DataFrame,
                               df_latest_files: DataFrame) -> DataFrame: 
     """  
     Identifies new or updated files by comparing the current 'source_modified_at'
@@ -36,7 +38,7 @@ def _get_new_or_updated_files(df_meta_table: DataFrame,
         'Identifying new or updated files based on modification timestamps'
     )
     df_files_to_copy = (
-        df_meta_table
+        df_metadata
         .join(df_latest_files, on='source_path', how='left')
         .filter(
             f.col('source_modified_at') >
@@ -48,3 +50,22 @@ def _get_new_or_updated_files(df_meta_table: DataFrame,
         .select('source_path', 'lakehouse_path')
     )
     return df_files_to_copy
+
+def _log_files_to_copy(df: DataFrame) -> DataFrame:
+    """
+    Logs the number of files that need to be copied and optionally displays them.
+    """
+
+    file_count = df.count()
+
+    logging.info(
+        f'Files to copy now (new or updated): {file_count}'
+    )
+
+    if file_count > 0:
+        display(df.orderBy("source_path"))
+    else:
+        logging.info(
+            'No new or updated files found'
+        )
+    return df
