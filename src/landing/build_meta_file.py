@@ -90,4 +90,4 @@ def build_meta_file(df: DataFrame,
       
     df_meta_columns = _select_meta_columns(df=df_with_lakehouse_path)
 
-    return df_meta_columns
+    return df_meta_file
