@@ -66,10 +66,10 @@ def extract_metadata(spark: SparkSession,
     _show_schema(df=df_binary_files, 
                  show_schema=True)
 
-    df_metadata = _get_metadata(df=df_binary_files, 
-                                conversion_factor=BYTES_PER_MB)
+    df_meta_extracted = _get_metadata(df=df_binary_files, 
+                                      conversion_factor=BYTES_PER_MB)
     
     logging.info(
         'Metadata extraction completed successfully'
     )
-    return df_metadata
+    return df_meta_extracted

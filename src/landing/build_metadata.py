@@ -71,8 +71,8 @@ def _select_meta_columns(df: DataFrame) -> DataFrame:
                                  'lakehouse_path')
     return df_meta_columns
 
-def build_meta_file(df: DataFrame, 
-                    root_path: str) -> DataFrame: 
+def build_metadata(df: DataFrame, 
+                         root_path: str) -> DataFrame: 
     """ 
     Orchestrates the full landing-path build process and returns the final
     metadata DataFrame containing the columns:
@@ -88,6 +88,6 @@ def build_meta_file(df: DataFrame,
     df_with_lakehouse_path = _build_relative_lakehouse_path(df=df_with_bucket_path, 
                                                             root_path=root_path)
       
-    df_meta_columns = _select_meta_columns(df=df_with_lakehouse_path)
+    df_metadata = _select_meta_columns(df=df_with_lakehouse_path)
 
-    return df_meta_columns
+    return df_metadata
