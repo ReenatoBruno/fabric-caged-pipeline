@@ -69,3 +69,15 @@ def _log_files_to_copy(df: DataFrame) -> DataFrame:
             'No new or updated files found'
         )
     return df
+
+def orchestrate_incremental_copy(df_meta_table: DataFrame,
+                                 df_metadata: DataFrame) -> DataFrame:
+    
+    df_latest_files = _get_latest_copied_files(df=df_meta_table)
+    
+    df_files_to_copy = _get_new_or_updated_files(df=df_metadata, 
+                                                 df_latest_files=df_latest_files)
+    
+    df_ready_for_copy = _log_files_to_copy(df=df_files_to_copy)
+
+    return df_ready_for_copy
