@@ -64,15 +64,15 @@ def _select_meta_columns(df: DataFrame) -> DataFrame:
     Select the final columns for the metadata
     """
     
-    df_meta_columns =  df.select('source_path',
-                                 'source_modified_at',
-                                 'source_size_mb',
-                                 'bucket_path',
-                                 'lakehouse_path')
-    return df_meta_columns
+    df_metadata = df.select('source_path',
+                            'source_modified_at',
+                            'source_size_mb',
+                            'bucket_path',
+                            'lakehouse_path')
+    return df_metadata
 
 def build_metadata(df: DataFrame, 
-                         root_path: str) -> DataFrame: 
+                   root_path: str) -> DataFrame: 
     """ 
     Orchestrates the full landing-path build process and returns the final
     metadata DataFrame containing the columns:
