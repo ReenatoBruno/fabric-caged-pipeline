@@ -59,12 +59,12 @@ def _get_new_or_updated_files(df_metadata: DataFrame,
 
 def _log_files_to_copy(df: DataFrame) -> DataFrame:
     """
-    Logs the number of files that need to be copied and optionally displays them.
+    Logs whether there are files to copy and optionally displays them
     """
 
     has_rows = df.limit(1).count() > 0
 
-    if has_rows > 0:
+    if has_rows:
         logging.info(
             'New or updated files found. Displaying list...'
         )
