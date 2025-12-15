@@ -37,19 +37,25 @@ def _get_new_or_updated_files(df_metadata: DataFrame,
     logging.info(
         'Identifying new or updated files based on modification timestamps'
     )
-    df_files_to_copy = (
-        df_metadata
-        .join(df_latest_files, on='source_path', how='left')
-        .filter(
-            f.col('source_modified_at') >
-            f.coalesce(
-                f.col('latest_copied_time'), 
-                f.lit('1970-01-01 00:00:00')
-                .cast('timestamp'))
+    try: 
+        df_files_to_copy = (
+            df_metadata
+            .join(df_latest_files, on='source_path', how='left')
+            .filter(
+                f.col('source_modified_at') >
+                f.coalesce(
+                    f.col('latest_copied_time'), 
+                    f.lit('1970-01-01 00:00:00')
+                    .cast('timestamp'))
+            )
+            .select('source_path', 'lakehouse_path')
         )
-        .select('source_path', 'lakehouse_path')
-    )
-    return df_files_to_copy
+        return df_files_to_copy
+    except Exception as e: 
+        logging.exception(
+            'Failed to identify new or updated files'
+        )
+        raise e
 
 def _log_files_to_copy(df: DataFrame) -> DataFrame:
     """
