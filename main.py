@@ -10,6 +10,8 @@ from src.landing.extract_metadata import extract_metadata
 from landing.build_metadata import build_metadata
 from landing.setup_metadata_table import setup_meta_table
 from landing.orchestrate_incremental_copy import orchestrate_incremental_copy
+from landing.orchestrate_files_to_copy import orchestrate_file_to_copy
+from landing.write_audit_table import write_audit_table
 
 def main(): 
     
@@ -38,7 +40,19 @@ def main():
                                                      df_meta_table=df_meta_table)
     display(df_ready_for_copy.limit(10))
 
+    df_audit, record_count = orchestrate_file_to_copy(spark=spark, 
+                                                      df=df_ready_for_copy,
+                                                      table_name=LANDING_META_TABLE_NAME)
+
+    write_audit_table(df=df_audit,
+                      table_name=LANDING_META_TABLE_NAME,
+                      count=record_count)
+    
+    logging.info(
+        'CAGED pipeline execution completed successfully.'
+    )
     return (df_meta_extracted,
             df_metadata,
             df_meta_table,
-            df_ready_for_copy)
+            df_ready_for_copy,
+            df_audit)
