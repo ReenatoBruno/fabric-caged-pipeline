@@ -72,13 +72,14 @@ def orchestrate_incremental_copy(df_meta_table: DataFrame,
             'Identifying new or updated files based on modification timestamps'
         )
         df_files_to_copy = _get_new_or_updated_files(df=df_metadata, 
-                                                 df_latest_files=df_latest_files)
+                                                     df_latest_files=df_latest_files)
     
         df_ready_for_copy = _log_files_to_copy(df=df_files_to_copy)
 
         logging.info(
-            'Orchestration of incremental identification completed successfully.')
-        
+            'Orchestration of incremental identification completed successfully.'
+        )
+
         return df_ready_for_copy
     except Exception as e:
         logging.error(
