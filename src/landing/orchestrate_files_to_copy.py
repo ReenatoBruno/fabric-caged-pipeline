@@ -98,11 +98,11 @@ def orchestrate_file_to_copy(spark: SparkSession,
     logging.info(
         f'Finished copying {count} files'
     )
-    df_final = spark.createDataFrame(records_rdd, schema)
+    df_audit = spark.createDataFrame(records_rdd, schema)
 
-    _display_results(df=df_final)
+    _display_results(df=df_audit)
 
-    return df_final, count
+    return df_audit, count
 
 
 
