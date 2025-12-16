@@ -10,24 +10,20 @@ def _read_binary_files(spark: SparkSession,
     """
     Reading binary files from OneLake shortcut
     """
+
     try: 
-        logging.info(
-            f'Reading files from {source_path}'
-        )
         df_binary_files = (
             spark.read.format('binaryFile')
             .option('recursiveFileLookup', 'true')
             .load(source_path)
         )
-        logging.info(
-            'Files successfully read from OneLake shortcut'
-        )
         return df_binary_files
     except Exception as e:
-        logging.exception(
-            f'An error occurred while reading files from: {source_path}'
+        logging.error( 
+            f'FATAL ERROR: An error occurred while reading files from: {source_path}',
+            exc_info=True 
         )
-        raise e
+        raise 
     
 def _show_schema(df: DataFrame, 
                  show_schema: bool) -> None:
@@ -43,9 +39,7 @@ def _get_metadata(df: DataFrame,
     """
     Selects, renames, and transforms key file metadata columns.
     """
-    logging.info(
-        'Retrieving metadata from files...'
-    )
+
     df_meta_extracted = df.select(
         f.col('path').alias('source_path'), 
         f.col('modificationTime').alias('source_modified_at'), 
@@ -55,21 +49,36 @@ def _get_metadata(df: DataFrame,
 
 def extract_metadata(spark: SparkSession,
                      source_path: str) -> DataFrame:
+    """  
+    Reading files from Amazon S3 via OneLake Shortcut, and extracts key file metadata.
+    """
     
-    logging.info(
-        'Starting metadata extraction...'
-    )
-    
-    df_binary_files = _read_binary_files(spark=spark, 
-                                         source_path=source_path)
-    
-    _show_schema(df=df_binary_files, 
-                 show_schema=True)
-
-    df_meta_extracted = _get_metadata(df=df_binary_files, 
-                                      conversion_factor=BYTES_PER_MB)
-    
-    logging.info(
-        'Metadata extraction completed successfully'
-    )
-    return df_meta_extracted
+    try:
+        logging.info(
+            f'Starting metadata extraction process from path: {source_path}'
+        )
+        logging.info(
+            f'Reading binary files from OneLake.'
+        )
+        df_binary_files = _read_binary_files(spark=spark, 
+                                             source_path=source_path)
+        
+        _show_schema(df=df_binary_files, 
+                     show_schema=True)
+        
+        logging.info(
+            'Extracting, renaming, and converting file size metadata.'
+        )
+        df_meta_extracted = _get_metadata(df=df_binary_files, 
+                                          conversion_factor=BYTES_PER_MB)
+        
+        logging.info(
+            'Metadata extraction completed successfully'
+        )
+        return df_meta_extracted
+    except Exception as e:
+        logging.error(
+            f'FATAL ERROR in {extract_metadata.__name__}: Metadata extraction failed for path {source_path}.',
+            exc_info=True
+        )
+        raise 
