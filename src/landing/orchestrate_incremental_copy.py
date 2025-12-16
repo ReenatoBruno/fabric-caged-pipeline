@@ -62,18 +62,20 @@ def _log_files_to_copy(df: DataFrame) -> DataFrame:
     Logs whether there are files to copy and optionally displays them
     """
 
-    has_rows = df.limit(1).count() > 0
-
-    if has_rows:
+    is_empty = df.isEmpty() 
+    
+    if not is_empty: 
+        num_files = df.count() 
         logging.info(
-            'New or updated files found. Displaying list...'
+            f'Starting copy for {num_files} new/updated files.'
         )
         display(df.orderBy('source_path'))
     else:
         logging.info(
-            'No new or updated files found'
+            'No new files were found for incremental copy.'
         )
     return df
+
 
 def orchestrate_incremental_copy(df_meta_table: DataFrame,
                                  df_metadata: DataFrame) -> DataFrame:
