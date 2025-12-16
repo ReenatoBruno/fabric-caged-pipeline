@@ -72,33 +72,30 @@ def setup_meta_table(spark: SparkSession,
     """
 
     try: 
-        # --- STEP 1: Defining schema ---
+        logging.info (
+            'Starting setup process for metadata table'
+        )
         logging.info(
             'Defining the required metadata schema.'
         )
         meta_schema = _define_meta_schema()
 
-        # --- STEP 2: Creating table ---
         logging.info(
             f'Attempting to create Delta Lake table {table_name} if it does not exist.'
         )
         _create_meta_table(spark=spark, 
                            schema=meta_schema, 
                            table_name=table_name)
-        logging.info(
-            f'Delta Lake table {table_name} created or already exists'
-        )
         
-        # --- STEP 3: Loading table ---
         logging.info(
             f'Loading meta table {table_name} as a DataFrame for incremental processing.'
         )
         df_meta_table = _load_meta_table(spark=spark, 
                                          table_name=table_name)
+        
         logging.info(
-            f'Metadata table setup and load complete for {table_name}'
+            'Setup process completed successfully.'
         )
-       
         return df_meta_table
     except Exception as e:
         logging.error(
