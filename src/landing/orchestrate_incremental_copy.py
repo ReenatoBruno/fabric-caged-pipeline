@@ -58,6 +58,9 @@ def _log_files_to_copy(df: DataFrame) -> DataFrame:
 
 def orchestrate_incremental_copy(df_meta_table: DataFrame,
                                  df_metadata: DataFrame) -> DataFrame:
+    """
+    Orchestrates the incremental identification of new or updated files for copying.  
+    """
     
     try:
         logging.info(
