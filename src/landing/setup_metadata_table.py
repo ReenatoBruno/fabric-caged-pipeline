@@ -18,7 +18,9 @@ def _define_meta_schema() -> StructType:
         StructField('source_size_mb', FloatType(), False), 
         StructField('bucket_path', StringType(), False), 
         StructField('lakehouse_path', StringType(), False),
-        StructField('copied_at', TimestampType(), False)
+        StructField('copied_at', TimestampType(), False), 
+        StructField('status', StringType(), False),
+        StructField('error', StringType(), True)
     ])
 
     return meta_schema
