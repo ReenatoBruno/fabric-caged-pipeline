@@ -31,9 +31,7 @@ def _create_meta_table (spark: SparkSession,
     """  
     Creates the landing metadata table if it does not already exist.
     """
-    logging.info(
-        f'Ensuring landing metadata table exists: {table_name}'
-    )
+
     try: 
         (
             spark.createDataFrame([], schema)
@@ -42,56 +40,69 @@ def _create_meta_table (spark: SparkSession,
             .mode('ignore')
             .saveAsTable(table_name)
         )
-        logging.info(
-            f'Landing metadata table {table_name} created or already exists'
-        )
     except Exception as e: 
         logging.exception(
-            f'Failed to create the landing meta table {table_name}', 
+            f'FATAL ERROR: Failed to create the landing meta table {table_name}', 
             exc_info=True
         )
-        raise e 
+        raise 
     
 def _load_meta_table(spark: SparkSession, 
                      table_name: str) -> DataFrame:
     """  
     Loads the landing metadata table as a Spark DataFrame
     """
-    logging.info(
-        f'Loading landing metadata table {table_name}'
-        )
+
     try: 
         df_meta_table = spark.table(table_name)
-        logging.info (
-            f'Successfully loaded landing metadata table {table_name}'
-        )
+
         return df_meta_table
     except Exception as e: 
         logging.error(
-            f'Failed to load landing metadata table {table_name}',
+            f'FATAL ERROR: Failed to load landing metadata table {table_name}',
             exc_info=True
         )
-        raise e
+        raise 
     
 def setup_meta_table(spark: SparkSession, 
                      table_name: str) -> DataFrame: 
     """  
-    This function ensures that the landing metadata table exists by creating it
-    if necessary, using the provided schema
+    This function first defines the schema, then attempts to create the table
+    if it doesn't exist, and finally returns the table as a Spark DataFrame.
     """
-    logging.info(
-        'Starting setup for landing metadata table...'
-    )
-    meta_schema = _define_meta_schema()
 
-    _create_meta_table(spark=spark, 
-                       schema=meta_schema, 
-                       table_name=table_name)
+    try: 
+        # --- STEP 1: Defining schema ---
+        logging.info(
+            'Defining the required metadata schema.'
+        )
+        meta_schema = _define_meta_schema()
 
-    df_meta_table = _load_meta_table(spark=spark, 
-                                     table_name=table_name)
-    
-    logging.info(
-        'Landing metadata table setup successful'
-    )
-    return df_meta_table
+        # --- STEP 2: Creating table ---
+        logging.info(
+            f'Attempting to create Delta Lake table {table_name} if it does not exist.'
+        )
+        _create_meta_table(spark=spark, 
+                           schema=meta_schema, 
+                           table_name=table_name)
+        logging.info(
+            f'Delta Lake table {table_name} created or already exists'
+        )
+        
+        # --- STEP 3: Loading table ---
+        logging.info(
+            f'Loading meta table {table_name} as a DataFrame for incremental processing.'
+        )
+        df_meta_table = _load_meta_table(spark=spark, 
+                                         table_name=table_name)
+        logging.info(
+            f'Metadata table setup and load complete for {table_name}'
+        )
+       
+        return df_meta_table
+    except Exception as e:
+        logging.error(
+             f'FATAL ERROR in {setup_meta_table.__name__}: Setup failed completely for table {table_name}.',
+             exc_info=True
+        )
+        raise
