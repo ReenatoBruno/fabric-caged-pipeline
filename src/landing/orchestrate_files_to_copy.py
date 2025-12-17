@@ -7,16 +7,12 @@ from typing import Iterator, Optional
 
 from utils.helpers import mssparkutils
 
-
 def _get_schema(spark: SparkSession,
                 table_name: str) -> StructType: 
     """
     Fetches the audit table schema for creating the final DataFrame
     """
 
-    logging.info(
-        f'Fetching schema from table {table_name}'
-    )
     schema = spark.table(table_name).schema
 
     return schema
@@ -79,30 +75,55 @@ def _display_results(df: DataFrame) -> None:
 def orchestrate_file_to_copy(spark: SparkSession,
                              df: DataFrame,
                              table_name: str) -> DataFrame:
-        
-    schema = _get_schema(spark=spark,
-                         table_name=table_name)
-             
-    rdd = df.rdd
-
-    records_rdd = rdd.mapPartitions(_process_partition)
-
-    count = records_rdd.count()
-
-    if count == 0:
+    """  
+    Orchestrates the distributed file copy process from source paths to the 
+    Lakehouse
+    """
+    
+    try: 
         logging.info(
-            'No files were submitted for copy'
+        'Starting file copy orchestration'
         )
-        return spark.createDataFrame([], schema)
- 
-    logging.info(
-        f'Finished copying {count} files'
-    )
-    df_audit = spark.createDataFrame(records_rdd, schema)
+        logging.info(
+            f'Fetching schema from table {table_name}'
+        )
+        schema = _get_schema(spark=spark,
+                            table_name=table_name)
 
-    _display_results(df=df_audit)
+        logging.info(
+            'Starting distributed file copy using rdd.mapPartitions...'
+        )       
+        rdd = df.rdd
 
-    return df_audit, count
+        records_rdd = rdd.mapPartitions(_process_partition)
+
+        count = records_rdd.count()
+
+        if count == 0:
+            logging.info(
+                'No files were submitted for copy'
+            )
+            return spark.createDataFrame([], schema)
+        logging.info(
+            f'Distributed file processing complete. Total audited records: {count}.'
+        )
+        df_audit = spark.createDataFrame(records_rdd, schema)
+        logging.info(
+            'Audit DataFrame created. Displaying the first 20 records.'
+        )
+        _display_results(df=df_audit)
+
+        logging.info(
+            'File copy orchestration completed successfully.'
+        )
+        return df_audit, count
+    except Exception as e:
+
+        logging.error(
+            f'FATAL ERROR during orchestration: {e}', 
+            exc_info=True
+        )
+        raise
 
 
 
