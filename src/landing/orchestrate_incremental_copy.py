@@ -47,7 +47,7 @@ def _log_files_to_copy(df: DataFrame) -> DataFrame:
     if not is_empty: 
         num_files = df.count() 
         logging.info(
-            f'Starting copy for {num_files} new/updated files.'
+            f'There are {num_files} new/updated files in the queue for ingestion.'
         )
         display(df.orderBy('source_path'))
     else:
