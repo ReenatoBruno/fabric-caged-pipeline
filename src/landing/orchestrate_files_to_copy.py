@@ -79,7 +79,7 @@ def orchestrate_file_to_copy(spark: SparkSession,
     Orchestrates the distributed file copy process from source paths to the 
     Lakehouse
     """
-    
+
     try: 
         logging.info(
         'Starting file copy orchestration'
@@ -118,7 +118,6 @@ def orchestrate_file_to_copy(spark: SparkSession,
         )
         return df_audit, count
     except Exception as e:
-
         logging.error(
             f'FATAL ERROR during orchestration: {e}', 
             exc_info=True
