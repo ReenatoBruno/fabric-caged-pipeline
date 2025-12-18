@@ -74,7 +74,7 @@ def orchestrate_incremental_copy(df_meta_table: DataFrame,
         logging.info(
             'Identifying new or updated files based on modification timestamps'
         )
-        df_files_to_copy = _get_new_or_updated_files(df=df_metadata, 
+        df_files_to_copy = _get_new_or_updated_files(df_metadata=df_metadata, 
                                                      df_latest_files=df_latest_files)
     
         df_ready_for_copy = _log_files_to_copy(df=df_files_to_copy)
