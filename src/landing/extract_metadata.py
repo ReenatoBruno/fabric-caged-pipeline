@@ -26,12 +26,12 @@ def _read_binary_files(spark: SparkSession,
         raise 
     
 def _show_schema(df: DataFrame, 
-                 show_schema: bool) -> None:
+                 display_schema: bool) -> None:
     """
     Displays the PySpark DataFrame schema (metadata) if the control flag is set to True.
     """
     
-    if show_schema:
+    if display_schema:
         df.printSchema()
 
 def _get_metadata(df: DataFrame, 
@@ -64,7 +64,7 @@ def extract_metadata(spark: SparkSession,
                                              source_path=source_path)
         
         _show_schema(df=df_binary_files, 
-                     show_schema=True)
+                     display_schema=True)
         
         logging.info(
             'Extracting, renaming, and converting file size metadata.'
