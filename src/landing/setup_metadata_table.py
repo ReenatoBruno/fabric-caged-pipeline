@@ -7,7 +7,7 @@ from pyspark.sql.types import (StructType,
                                TimestampType, 
                                FloatType)
 
-def _define_meta_schema() -> StructType:
+def _define_meta_schema(df: DataFrame) -> StructType:
     """  
     Define the schema for the landing meta table
     """
@@ -65,6 +65,7 @@ def _load_meta_table(spark: SparkSession,
         raise 
     
 def setup_meta_table(spark: SparkSession, 
+                     df: DataFrame,
                      table_name: str) -> DataFrame: 
     """  
     This function first defines the schema, then attempts to create the table
@@ -78,7 +79,7 @@ def setup_meta_table(spark: SparkSession,
         logging.info(
             'Defining the required metadata schema.'
         )
-        meta_schema = _define_meta_schema()
+        meta_schema = _define_meta_schema(df=df)
 
         logging.info(
             f'Attempting to create Delta Lake table {table_name} if it does not exist.'
