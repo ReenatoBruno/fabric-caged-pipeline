@@ -24,9 +24,12 @@ def _build_relative_lakehouse_path(df: DataFrame,
 
     df_with_lakehouse_path = df.withColumn(
         'lakehouse_path', 
-        f.concat(f.lit(root_path + '/'), f.col('bucket_path'))
+        f.concat(
+            f.lit(root_path + '/'), 
+            f.split(f.col('source_path'), '/caged/').getItem(1)
+        )
     )
-    return df_with_lakehouse_path 
+    return df_with_lakehouse_path
     
 def _select_meta_columns(df: DataFrame) -> DataFrame:
     """ 
