@@ -41,7 +41,8 @@ def main():
         logging.info(
             'Step 3/6: Define the schema, then attempts to create the table and returns the table as a Spark DataFrame.'
         )
-        df_meta_table = setup_meta_table(spark=spark, 
+        df_meta_table = setup_meta_table(spark=spark,
+                                         df=df_metadata, 
                                          table_name=LANDING_META_TABLE_NAME)
         display(df_meta_table.limit(10))
 
