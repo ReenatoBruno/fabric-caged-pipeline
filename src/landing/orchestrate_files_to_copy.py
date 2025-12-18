@@ -74,56 +74,62 @@ def _display_results(df: DataFrame) -> None:
 
 def orchestrate_file_to_copy(spark: SparkSession,
                              df: DataFrame,
-                             table_name: str) -> DataFrame:
+                             table_name: str) -> (DataFrame, int):
     """  
-    Orchestrates the distributed file copy process from source paths to the 
-    Lakehouse
+    Orchestrates file migration using fastcp for high-performance directory replication.
     """
 
     try: 
+        
         logging.info(
-        'Starting file copy orchestration'
+            'Starting copy orchestration on the Driver.'
         )
-        logging.info(
-            f'Fetching schema from table {table_name}'
-        )
-        schema = _get_schema(spark=spark,
-                            table_name=table_name)
+        schema = _get_schema(spark=spark, table_name=table_name)
 
-        logging.info(
-            'Starting distributed file copy using rdd.mapPartitions...'
-        )       
-        rdd = df.rdd
-
-        records_rdd = rdd.mapPartitions(_process_partition)
-
-        count = records_rdd.count()
+        files_to_copy = df.collect()
+        count = len(files_to_copy)
 
         if count == 0:
             logging.info(
-                'No files were submitted for copy'
+                'No files available for copy.'
             )
-            return spark.createDataFrame([], schema)
+            return spark.createDataFrame([], schema), 0
+
         logging.info(
-            f'Distributed file processing complete. Total audited records: {count}.'
+            f'Processing {count} items...'
         )
-        df_audit = spark.createDataFrame(records_rdd, schema)
-        logging.info(
-            'Audit DataFrame created. Displaying the first 20 records.'
-        )
+        
+        audit_records = []
+
+        for row in files_to_copy:
+            source = row['source_path']
+            target = row['lakehouse_path']
+            
+            try:
+                mssparkutils.fs.cp(source, target)
+                
+                logging.info(
+                    f'Successfully copied: {source} to {target}'
+                )
+                audit_records.append(_create_output_record(row))
+                
+            except Exception as e:
+                logging.error(
+                    f'Failed to copy {source}: {str(e)}'
+                )
+                audit_records.append(
+                    _create_output_record(row, status='ERROR', error=str(e))
+                )
+        df_audit = spark.createDataFrame(audit_records, schema)
         _display_results(df=df_audit)
 
-        logging.info(
-            'File copy orchestration completed successfully.'
-        )
         return df_audit, count
+
     except Exception as e:
         logging.error(
-            f'FATAL ERROR during orchestration: {e}', 
-            exc_info=True
-        )
+            f'FATAL ERROR: {e}', 
+            exc_info=True)
         raise
-
 
 
         
