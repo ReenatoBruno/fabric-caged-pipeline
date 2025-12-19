@@ -97,7 +97,6 @@ def setup_meta_table(spark: SparkSession,
         return df_meta_table
     except Exception as e:
         logging.exception(
-             f'FATAL ERROR in {setup_meta_table.__name__}: Setup failed completely for table {table_name}.',
-             exc_info=True
+             f'FATAL ERROR in {setup_meta_table.__name__}: Setup failed completely for table {table_name}.'
         )
         raise
