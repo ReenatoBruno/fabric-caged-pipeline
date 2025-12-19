@@ -34,10 +34,11 @@ def _get_new_or_updated_files(df_metadata: DataFrame,
                 .cast('timestamp'))
         )
         .select('source_path',
-        'source_modified_at', 
-        'source_size_mb', 
-        'bucket_path', 
-        'lakehouse_path')
+                'source_modified_at', 
+                'source_size_mb', 
+                'bucket_path', 
+                'lakehouse_path'
+        )
     )
     return df_files_to_copy
 
