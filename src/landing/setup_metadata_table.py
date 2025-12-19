@@ -7,7 +7,7 @@ from pyspark.sql.types import (StructType,
                                TimestampType, 
                                FloatType)
 
-def _define_meta_schema(df: DataFrame) -> StructType:
+def _define_meta_schema() -> StructType:
     """  
     Define the schema for the landing meta table
     """
@@ -42,8 +42,7 @@ def _create_meta_table (spark: SparkSession,
         )
     except Exception as e: 
         logging.exception(
-            f'FATAL ERROR: Failed to create the landing meta table {table_name}', 
-            exc_info=True
+            f'FATAL ERROR: Failed to create the landing meta table {table_name}'
         )
         raise 
     
@@ -58,14 +57,12 @@ def _load_meta_table(spark: SparkSession,
 
         return df_meta_table
     except Exception as e: 
-        logging.error(
-            f'FATAL ERROR: Failed to load landing metadata table {table_name}',
-            exc_info=True
+        logging.exception(
+            f'FATAL ERROR: Failed to load landing metadata table {table_name}'
         )
         raise 
     
 def setup_meta_table(spark: SparkSession, 
-                     df: DataFrame,
                      table_name: str) -> DataFrame: 
     """  
     This function first defines the schema, then attempts to create the table
@@ -79,7 +76,7 @@ def setup_meta_table(spark: SparkSession,
         logging.info(
             'Defining the required metadata schema.'
         )
-        meta_schema = _define_meta_schema(df=df)
+        meta_schema = _define_meta_schema()
 
         logging.info(
             f'Attempting to create Delta Lake table {table_name} if it does not exist.'
@@ -99,7 +96,7 @@ def setup_meta_table(spark: SparkSession,
         )
         return df_meta_table
     except Exception as e:
-        logging.error(
+        logging.exception(
              f'FATAL ERROR in {setup_meta_table.__name__}: Setup failed completely for table {table_name}.',
              exc_info=True
         )
