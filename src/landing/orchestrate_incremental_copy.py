@@ -1,6 +1,4 @@
 import logging
-
-from IPython.display import display
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as f
 
@@ -42,7 +40,8 @@ def _get_new_or_updated_files(df_metadata: DataFrame,
     )
     return df_files_to_copy
 
-def _log_files_to_copy(df: DataFrame) -> DataFrame:
+def _log_files_to_copy(df: DataFrame, 
+                       show_details: bool) -> DataFrame:
     """
     Logs whether there are files to copy and optionally displays them
     """
@@ -54,7 +53,8 @@ def _log_files_to_copy(df: DataFrame) -> DataFrame:
         logging.info(
             f'There are {num_files} new/updated files in the queue for ingestion.'
         )
-        display(df.orderBy('source_path'))
+        if show_details:
+            df.orderBy('source_path').show(truncate=False)
     else:
         logging.info(
             'No new files were found for incremental copy.'
@@ -82,7 +82,8 @@ def orchestrate_incremental_copy(df_meta_table: DataFrame,
         df_files_to_copy = _get_new_or_updated_files(df_metadata=df_metadata, 
                                                      df_latest_files=df_latest_files)
     
-        df_ready_for_copy = _log_files_to_copy(df=df_files_to_copy)
+        df_ready_for_copy = _log_files_to_copy(df=df_files_to_copy,
+                                               show_details=True)
 
         logging.info(
             'Orchestration of incremental identification completed successfully.'
@@ -90,7 +91,7 @@ def orchestrate_incremental_copy(df_meta_table: DataFrame,
 
         return df_ready_for_copy
     except Exception as e:
-        logging.error(
-            f'FATAL ERROR in {orchestrate_incremental_copy.__name__}. The identification pipeline failed.', 
-            exc_info=True)
+        logging.exception(
+            f'FATAL ERROR in {orchestrate_incremental_copy.__name__}. The identification pipeline failed.'
+          )
         raise e
