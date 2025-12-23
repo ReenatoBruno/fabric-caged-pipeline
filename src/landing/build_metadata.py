@@ -91,8 +91,7 @@ def build_metadata(df: DataFrame,
 
         return df_metadata
     except Exception as e:
-        logging.error(
-            f'FATAL ERROR in {build_metadata.__name__}: Metadata DataFrame building failed.',
-            exc_info=True
+        logging.exception(
+            f'FATAL ERROR in {build_metadata.__name__}: Metadata DataFrame building failed.'
         )
         raise
