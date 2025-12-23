@@ -1,5 +1,4 @@
 import logging
-from IPython.display import display
 from pyspark.sql import SparkSession
 
 from config.paths import (SHORTCUT_PATH, 
@@ -29,28 +28,28 @@ def main():
         )
         df_meta_extracted = extract_metadata(spark=spark,
                                              source_path=SHORTCUT_PATH) 
-        display(df_meta_extracted.limit(10))
+        df_meta_extracted.show(10, truncate=False)
         
         logging.info(
             'Step 2/6: Building relative paths and selecting the final set of metadata column.'
         )
         df_metadata = build_metadata(df=df_meta_extracted,
                                      root_path=LANDING_ROOT_PATH)
-        display(df_metadata.limit(10))
+        df_metadata.show(10, truncate=False)
 
         logging.info(
             'Step 3/6: Define the schema, then attempts to create the table and returns the table as a Spark DataFrame.'
         )
         df_meta_table = setup_meta_table(spark=spark, 
                                          table_name=LANDING_META_TABLE_NAME)
-        display(df_meta_table.limit(10))
+        df_meta_table.show(10, truncate=False)
 
         logging.info(
             'Step 4/6: Identifying new or updated files for incremental ingestion'
         )
         df_ready_for_copy = orchestrate_incremental_copy(df_metadata=df_metadata, 
                                                          df_meta_table=df_meta_table)
-        display(df_ready_for_copy.limit(10))
+        df_ready_for_copy.show(10, truncate=False)
 
         logging.info(
             'Step 5/6: Executing distributed file copy from source to Lakehouse and generating audit records'
@@ -75,8 +74,7 @@ def main():
                 df_audit)
     
     except Exception as e:
-        logging.error(
-            f'FATAL ERROR: CAGED pipeline execution FAILED. Shutting down.',
-            exc_info=True
+        logging.exception(
+            f'FATAL ERROR: CAGED pipeline execution FAILED. Shutting down.'
         )
         raise 
