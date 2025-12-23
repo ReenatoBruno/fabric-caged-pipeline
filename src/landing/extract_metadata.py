@@ -19,9 +19,8 @@ def _read_binary_files(spark: SparkSession,
         )
         return df_binary_files
     except Exception as e:
-        logging.error( 
-            f'FATAL ERROR: An error occurred while reading files from: {source_path}',
-            exc_info=True 
+        logging.exception( 
+            f'FATAL ERROR: An error occurred while reading files from: {source_path}'
         )
         raise 
     
@@ -77,8 +76,7 @@ def extract_metadata(spark: SparkSession,
         )
         return df_meta_extracted
     except Exception as e:
-        logging.error(
-            f'FATAL ERROR in {extract_metadata.__name__}: Metadata extraction failed for path {source_path}.',
-            exc_info=True
+        logging.exception(
+            f'FATAL ERROR in {extract_metadata.__name__}: Metadata extraction failed for path {source_path}.'
         )
         raise 
