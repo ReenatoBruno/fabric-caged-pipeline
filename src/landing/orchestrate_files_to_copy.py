@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType, Row, Optional
+from pyspark.sql.types import StructType, Row
 from typing import List, Optional, Tuple
 from utils.helpers import mssparkutils
 from utils.constants import MAX_FILES_ALLOWED
@@ -142,8 +142,8 @@ def orchestrate_file_to_copy(spark: SparkSession,
     except Exception as e:
         logging.error(
             f'FATAL ERROR in copy orchestration: {e}',
-            exc_info=True
         )
+        raise 
 
         
 
